@@ -13,17 +13,25 @@ try:
     print("Connection to: ", client_address[0])
 
     while True:
-        recv_data = client_socket.recv(2048).decode("utf-8")
+        recv_data = b""
+        while True:
+            chunk = client_socket.recv(4096)
+            if not chunk:
+                break
+            recv_data += chunk
+
+        recv_data = recv_data.decode("utf-8")
+
         if not recv_data:
             break
 
-        if recv_data.lower() == 'bye':
+        if recv_data.lower() == 'exit':
             break
 
         print(f"Client: {recv_data}")
 
         sent_data = input("Server: ")
-        if sent_data.lower() == 'bye':
+        if sent_data.lower() == 'exit':
             client_socket.send(sent_data.encode("utf-8"))
             break
 
